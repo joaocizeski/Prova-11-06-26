@@ -1,10 +1,12 @@
 package br.com.senac.prova_11_06.services;
 
 
+import br.com.senac.prova_11_06.dtos.ProvaFiltroDto;
 import br.com.senac.prova_11_06.dtos.ProvaRequestDto;
 import br.com.senac.prova_11_06.entidades.Prova;
 import br.com.senac.prova_11_06.repositorios.ProvaRepositorio;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 
@@ -17,21 +19,29 @@ public class ProvaService {
         this.provaRepositorio = provaRepositorio;
     }
 
-    public Prova criar(ProvaRequestDto pessoa) {
+    @GetMapping("/listar")
+    public List<Prova> listar(ProvaFiltroDto filtro) {
+        if (filtro.getTitulo() != null) {
+            return provaRepositorio.findByTitulo(filtro.getTitulo());
+        }
+        return provaRepositorio.findAll();
+    }
 
-        Prova pessoaFisicaPersist = this.provaDtoParaProva(pessoa);
+    public Prova criar(ProvaRequestDto prova) {
 
-        return provaRepositorio.save(pessoaFisicaPersist);
+        Prova provaPersist = this.provaDtoParaProva(prova);
+
+        return provaRepositorio.save(provaPersist);
 
     }
 
-    public Prova atualizar(Long id, ProvaRequestDto pessoa) {
+    public Prova atualizar(Long id, ProvaRequestDto prova) {
 
             if(provaRepositorio.existsById(id)) {
-            Prova pessoaFisicaPersist = this.provaDtoParaProva(pessoa);
-            pessoaFisicaPersist.setId(id);
+            Prova provaPersist = this.provaDtoParaProva(prova);
+            provaPersist.setId(id);
 
-            return provaRepositorio.save(pessoaFisicaPersist);
+            return provaRepositorio.save(provaPersist);
         }
 
         throw new RuntimeException("Prova não encontrada!");
@@ -42,17 +52,6 @@ public class ProvaService {
             provaRepositorio.deleteById(id);
         }
 
-        throw new RuntimeException("Prova não encontrada!");
-    }
-
-    public List<Prova> listar(ProvaRequestDto filtro){
-        return provaRepositorio.findAll();
-    }
-
-    public Prova listarById(Long id){
-        if (provaRepositorio.existsById(id)){
-            return provaRepositorio.findById(id).get();
-        }
         throw new RuntimeException("Prova não encontrada!");
     }
 

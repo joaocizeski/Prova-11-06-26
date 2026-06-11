@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface ProvaRepositorio extends JpaRepository<Prova, Long> {
 
-    List<Prova> findByTituloContaining(String titulo);
+    List<Prova> findByTitulo(String titulo);
 
 }
